@@ -76,7 +76,7 @@ class ExceptionHandler extends Exception
             // damm it was an error not an exception!
         }
         
-        $this->sendExceptionMail($message);
+        $this->sendException($message);
     }
 
     public function render(Exception $e)
@@ -90,7 +90,7 @@ class ExceptionHandler extends Exception
         }
     }
 
-    protected function sendExceptionMail(?string $message)
+    protected function sendException(?string $message)
     {
         /**
          * TODO: Here we call service to send E-mail or Slack Notification.
