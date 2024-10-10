@@ -1,0 +1,11 @@
+{
+    "name": "tickettailer/webhook",
+    "description": "This is the Webbook App with Exponential backoff strategy in place.",
+    "autoload": {
+        "psr-4": {
+            "TicketTailor\\Webhook\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {}
+}

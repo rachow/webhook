@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+/**
+ *  @author: $rachow
+ * 
+ *  Entry point for our Command Line Interface.
+ *      - Hook long running processes 
+ *      - Schedule tasks through CRON **** path_to_php path_to_script > /dev/null
+ * 
+ */
+declare(strict_types=1);
+
+require __DIR__ . '/bootstrap.php';
+
+use TicketTailor\Webhook\Console\CommandKernel;
+
+ini_set('max_execution_time', 0); // unlimited
+ini_set('memory_limit', -1); // unlimited
+
+$kernel = new CommandKernel();
+$kernel->execute($argv);
+
+// jolly good! - all done now.
