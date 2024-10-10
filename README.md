@@ -19,7 +19,7 @@ You can install the project by cloning the git repository in your preferred file
 Ensure you have Git available and run the following.
 
 ```bash
-$ git clone https://...
+$ git clone https://github.com/rachow/webhook.git
 ```
 
 ## Usage
