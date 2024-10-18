@@ -33,7 +33,7 @@ class QueueService implements QueueInterface
     /**
      * Implement the fetching of queue data.
      *      - todo:
-     *          - Database | Redis / RabbitMQ implementation.
+     *          - Database | Redis / Memcached = Key/Value store
      */
     public function getQueueData(): array
     {
