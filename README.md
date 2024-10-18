@@ -50,18 +50,6 @@ No command specified.
 
 Once the Webhook Service has started, it will write a PID file in the path `~/logs/[PROC].pid`. And during each Queue item processing it will retouch this file, giving you an oppertunity to further monitor workers easily and pass to a proc monitor. => `$ ls -la | grep '.pid'`. It also allows you to locate the processes after running nohups (ofcourse you can `ps -au..`).
 
-#### Note:
-
-You can opt to run this in the background Non OOP based. Or for one time testing how about using `nohup ./webhook_processor.php &` command.
-
-```
-$ nohup /path/to/php path/to/app/webhook_processor.php &
-
-# To terminate the process, kill
-$ kill 2075
-[1]+  Terminated  nohup  /var/www/tickettailor/webhook_processor.php
-
-```
 
 If there are logging taking place, feel free to tail those or even grep for errors of a particular pattern `$ cat /path/to/app/logs/webhook.log | grep 'Failed'`.
 ```
@@ -86,7 +74,7 @@ In order to prepare for the processing of large amount of queue data, there are 
 
 ``` 
 [program:webhook_processor]
-command=/usr/bin/php /path/to/webhook_processor.php
+command=/usr/bin/php /path/to/cli.php run:webhook
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/supervisor/webhook.error.log
@@ -111,7 +99,7 @@ user=www-data
   - DLQ can be based on a NoSQL database, MongoDB/Cassandra ...?
   - Store meaningful data e.g.
     - `id` - incremental auto generated and unique - AUTO_INCREMENT
-    - `uuid` - Universal Unique Identifier, where DLQs are exposed or may form as par of the URI e.g. `/workers/ecGrs01/queue/dead/654676fe-067c-49ff-bba0-ac35ac716f13`
+    - `uuid` - Universal Unique Identifier, where DLQs are exposed or may form as part of the URI e.g. `/workers/ecGrs01/queue/dead/654676fe-067c-49ff-bba0-ac35ac716f13`
     - `header` - Keep the exact header that was used to send request, we may have injected e.g. `X-Request-Id: TicketTailer-Hook-001` `UserAgent: TicketTailer-Bot`. Keep as TEXT fied or JSON -> `{JSON}`.
     - `payload` - The entire request body that was sent as HTTP `POST`, `PUT`, etc.
     - `error` - Recorded error e.g. `503 Service Unavailable` - downtime/maintenance.
