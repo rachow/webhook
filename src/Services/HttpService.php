@@ -19,9 +19,8 @@ class HttpService implements HttpInterface
     protected ?string $request = null;
 
     /**
-     * Creates an instance
+     * Creates an instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -31,7 +30,8 @@ class HttpService implements HttpInterface
     /**
      * Perform a HTTP verb GET request.
      *
-     * @param $url
+     * @param string $url
+     * @param array  $params
      *
      */
     public function get(string $url, array $params = [])
@@ -39,7 +39,7 @@ class HttpService implements HttpInterface
         $urlParts = parse_url($url);
 
         if (!isset($urlParts['host'])) {
-            throw new HttpException(HttpStatus::NOT_FOUND);
+            throw new HttpException(HttpStatus::NOT_FOUND()->value);
         }
     
         $host = $urlParts['host'];
@@ -53,15 +53,16 @@ class HttpService implements HttpInterface
     /**
      * Perform a HTTP verb POST request :/JSON
      *
-     * @param $url
-     * @param array $data 
+     * @param string $url
+     * @param array  $data
+     *
      */
     public function post(string $url, array $data = [])
     {
         $urlParts = parse_url($url);
 
         if (!isset($urlParts['host'])) {
-            throw new HttpException(HttpStatus::NOT_FOUND);
+            throw new HttpException(HttpStatus::NOT_FOUND()->value);
         }
 
         $host = $urlParts['host'];

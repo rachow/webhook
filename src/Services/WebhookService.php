@@ -20,12 +20,19 @@ class WebhookService implements WebhookInterface
     // @var - queue service
     protected ?QueueService $queueService = null;
 
+    // @var - queue name
+    protected ?string $queueName = null;
+
     // @var - logging service
     protected ?FileLoggingService $loggingService = null;
 
     // @var - http service
     protected ?HttpService $httpService = null;
 
+    /**
+     * Creates an instance.
+     *
+     */
     public function __construct()
     {
         $this->processId = getmypid();
@@ -35,32 +42,46 @@ class WebhookService implements WebhookInterface
         $this->httpService = new HttpService();
     }
 
+    /**
+     * Run the long running service potentially.
+     *
+     * @return void
+     *
+     */
     public function execute(): void
     {
         $this->cleanupProcs();
         $this->writeToLogService('Webhook Service Started.');
-        $this->ps();
+        $this->ps(); // initial PID file.
 
         $this->writeToLogService(
             sprintf('Running process: [%s]', $this->getProcessId())
         );
     
         try {
+
+            $this->queueName = $this->queueService->getQueueName();
             $queueData = $this->queueService->getQueueData();
+            
             array_shift($queueData); // remove header
+            
             $queueTotal = count($queueData);
+            
             $this->writeToLogService(
                 sprintf('Queue total: [%s]', $queueTotal)
             );
 
             for ($k=1; $k<$queueTotal; $k++) {
+            
                 $url = $queueData[$k][0];
+            
                 if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
                     $this->writeToLogService(
                         sprintf('Invalid URL: [%s] skipping.', $url)
                     );
                     continue;
                 }
+            
                 $this->ps(); // I'm alive per Q item checkpoint.
                 $this->processQueueData($url, $data = [
                     'OrderId' => $queueData[$k][1],
@@ -77,6 +98,13 @@ class WebhookService implements WebhookInterface
         $this->writeToLogService('Process complete.');
     }
 
+    /**
+     * Process single Queue Job.
+     *
+     * @param string $url
+     * @param ?array $data
+     *
+     */
     private function processQueueData(string $url, ?array $data)
     {
         $retry = 0;
@@ -97,35 +125,25 @@ class WebhookService implements WebhookInterface
         }
     }
 
+    /**
+     * Write to the injected logging service.
+     *
+     * @param ?string $msg
+     *
+     */
     protected function writeToLogService(?string $msg = ''): void
     {
         $this->loggingService->writeToLog(
             sprintf('[%s] %s', $this->getProcessId(), $msg),
             'webhook' // filename
         );
-
-/*         try {
-            // additionally add node [x] to the log to trace.
-            $this->loggingService->writeToLog(
-                sprintf('[%s] %s', $this->getProcessId(), $msg),
-                'webhook' // filename
-            );
-        } catch (LoggingException $e) {
-            fwrite(
-                php_sapi_name() == 'cli' ? STDERR : fopen('php://stderr', 'w'),
-                sprintf('Error: %s', $e->getMessage()) . PHP_EOL . $e->getMessage()
-            );
-        } catch (\Exception $e) {
-            fwrite(
-                php_sapi_name() == 'cli' ? STDERR : fopen('php://stderr', 'w'),
-                sprintf('Error: %s', $e->getMessage()) . PHP_EOL . $e->getMessage()
-            );
-        } */
     }
 
     /**
      * Set the process id of current worker.
-     * Keep on touching to keep me alive. | glob('/*.pid')
+     *
+     * touch ID to check process still running or 'ps ..au..'.
+     *
      */
     protected function ps(): void
     {
@@ -133,12 +151,21 @@ class WebhookService implements WebhookInterface
     }
 
     /**
-     * Just clean all proc files.
+     * Remove all process files to start with.
+     * todo: if multiple processes running tweak this.
+     *
      */
     protected function cleanupProcs()
     {
         array_map('unlink', glob(__DIR__ . '/../../logs/*.pid'));
     }
+
+    /**
+     * Grab the current process ID assigned.
+     *
+     * @return int
+     *
+     */
     public function getProcessId(): int
     {
         return $this->processId;

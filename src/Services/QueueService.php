@@ -13,6 +13,10 @@ use TicketTailor\Webhook\Contracts\QueueInterface;
 
 class QueueService implements QueueInterface
 {
+    /**
+     * Creates an instance.
+     *
+     */
     public function __construct(
         protected ?string $queueFilePath = __DIR__ . '/../../data/',
         protected ?string $queueFileName = 'webhooks.txt',
@@ -23,7 +27,10 @@ class QueueService implements QueueInterface
     }
 
     /**
-     * The name of the queue.
+     * Get the name of the Queue.
+     *
+     * @return string
+     *
      */
     public function getQueueName(): string
     {
@@ -31,9 +38,12 @@ class QueueService implements QueueInterface
     }
 
     /**
-     * Implement the fetching of queue data.
-     *      - todo:
-     *          - Database | Redis / Memcached = Key/Value store
+     * Get the queue data.
+     * todo:
+     *     - Database | Redis / Memcached = Key/Value store
+     *
+     * @return array
+     *
      */
     public function getQueueData(): array
     {
@@ -50,7 +60,10 @@ class QueueService implements QueueInterface
     /**
      * Get the CSV data.
      *      - todo: I/O resource + race conditions, free memory, locking/unlocking.
-     *      - LOCK_EX, LOCK_UN 
+     *      - LOCK_EX, LOCK_UN
+     *
+     * @return array
+     *
      */
     protected function getCsvData(): array
     {
@@ -60,6 +73,12 @@ class QueueService implements QueueInterface
         return [];
     }
 
+    /**
+     * Get the JSON data.
+     *
+     * @return array
+     *
+     */
     protected function getJsonData(): array
     {
         if (file_exists($this->queueFilePath . $this->queueFileName)) {

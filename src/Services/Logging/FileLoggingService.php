@@ -2,10 +2,8 @@
 /**
  *  @author: $rachow
  *
- *  todo: Cloud Logging = ELK
- *          AMQP / Broker = Drip Feed
- *          Attach heaader, e.g.
- *          X-Request-Id: 213d350b-92d5-41a0-981d-04029c4c797e
+ *  todo: add a cloud logging service fire + forget request.
+ *        or add Message Broker to act as proxy.
  *
  */
 
@@ -17,6 +15,14 @@ use TicketTailor\Webhook\Contracts\LoggingInterface;
 
 class FileLoggingService implements LoggingInterface
 {
+
+    /**
+     * Write to the log to filesystem.
+     *
+     * @param string $msg
+     * @param string $filename
+     *
+     */
     public function writeToLog(?string $msg = '', ?string $filename = null)
     {       
         $logFile = __DIR__ . '/../../../logs/';
