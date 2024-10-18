@@ -24,18 +24,6 @@ $ git clone https://github.com/rachow/webhook.git
 
 ## Usage
 
-To simply call the webhook process, you can utlise the built-in PHP development server by running the following command.
-
-```php
-$ php -S http://localhost:9090 -t public/
-```
-
-Next visit the following URL on your browser.
-
-```
-http://localhost:9090/
-```
-
 To actually run the webhook service, its a long running process, therefore you will need to trigger a CLI command to get going.
 
 ```
